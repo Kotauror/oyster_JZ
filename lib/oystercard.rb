@@ -6,7 +6,6 @@ class Oystercard
 
   DEFAULT_BALANCE = 0
   MINIMUM_BALANCE = 1
-  PENALTY = MINIMUM_BALANCE * 6
   DEFAULT_LIMIT = 90
   attr_reader :balance, :journey_history, :current_journey
 
@@ -21,43 +20,46 @@ class Oystercard
     @balance += amount
   end
 
-  def in_journey?
-    !!@entry_station
-  end
-
   def touch_in(station)
     raise "Minimum balance not met" if @balance < MINIMUM_BALANCE
-    if @current_journey != nil then
-      deduct(PENALTY)
-      @journey_history << "#{PENALTY} was deducted due to double touch-in"
-    end
-    @current_journey = Journey.new(station)
+    no_touch_out_guard
+    @current_journey = Journey.new
+    @current_journey.entry_station = station
   end
 
   def touch_out(station)
-    if @current_journey == nil then
-      deduct(PENALTY)
-      @journey_history << "#{PENALTY} was deducted due to no touch-in"
-    else
-      @current_journey.exit_station = station
-      deduct(fare)
-      save_journey
-      @current_journey = nil
-    end
+    no_touch_in_guard
+    @current_journey.exit_station = station
+    deduct(@current_journey.fare)
+    save_journey
+    end_current_journey
   end
 
   private
 
-  def fare
-    MINIMUM_BALANCE
+  def no_touch_out_guard
+    if @current_journey != nil then
+      deduct(@current_journey.fare)
+      save_journey
+    end
   end
 
-  def deduct(fare)
-    @balance -= fare
+  def no_touch_in_guard
+    if @current_journey == nil then
+      @current_journey = Journey.new
+    end
+  end
+
+  def end_current_journey
+    @current_journey = nil
   end
 
   def save_journey
     @journey_history << @current_journey
+  end
+
+  def deduct(fare)
+    @balance -= fare
   end
 
 end

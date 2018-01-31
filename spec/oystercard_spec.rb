@@ -35,6 +35,7 @@ describe Oystercard do
     end
 
     describe "#touch_out" do
+
       before(:each){oystercard.touch_in(station)}
 
       it "deducts fare from the card balance" do
