@@ -27,23 +27,46 @@ describe Oystercard do
     before(:each){oystercard.top_up(Oystercard::MINIMUM_BALANCE)}
 
     describe "#touch_in" do
-      # let(:journey) { double :journey}
       it "creates new object of Journey class" do
-      oystercard.touch_in(station)
-      expect(oystercard.current_journey).not_to eq nil
+        oystercard.touch_in(station)
+        expect(oystercard.current_journey).not_to eq nil
+      end
+      it "sets the entry station to the journey" do
+        oystercard.touch_in(station)
+        expect(oystercard.current_journey.entry_station).to eq station
+      end
+      it "deducts the minimum fare when there was touch out " do
+
+      end
+      it "deducts the penalty fare when there was no touch out " do
+
       end
     end
 
     describe "#touch_out" do
 
+      it "deducts penalty fare from the card balance when no touch in" do
+
+      end
+
       before(:each){oystercard.touch_in(station)}
 
-      it "deducts fare from the card balance" do
+      it "deducts minimum fare from the card balance when was touch in" do
         expect{oystercard.touch_out(station)}.to change{oystercard.balance}.by(-Oystercard::MINIMUM_BALANCE)
       end
 
       it "adds journeys to journey history" do
         expect {oystercard.touch_out(station)}.to change{oystercard.journey_history.count}.by 1
+      end
+
+      it "sets the exit station" do
+        oystercard.touch_out(station)
+        expect(oystercard.current_journey.exit_station).to eq station
+      end
+
+      it "reset the current journey" do
+        oystercard.touch_out(station)
+        expect(oystercard.current_journey).to eq nil
       end
 
     end

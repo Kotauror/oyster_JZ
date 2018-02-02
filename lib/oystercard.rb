@@ -1,7 +1,6 @@
 require_relative 'station'
 require_relative 'journey'
 
-
 class Oystercard
 
   DEFAULT_BALANCE = 0
@@ -30,8 +29,8 @@ class Oystercard
   def touch_out(station)
     no_touch_in_guard
     @current_journey.exit_station = station
-    deduct(@current_journey.fare)
     save_journey
+    deduct(@current_journey.fare)
     end_current_journey
   end
 
@@ -39,8 +38,8 @@ class Oystercard
 
   def no_touch_out_guard
     if @current_journey != nil then
-      deduct(@current_journey.fare)
       save_journey
+      deduct(@current_journey.fare)
     end
   end
 

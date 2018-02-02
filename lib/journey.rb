@@ -1,3 +1,6 @@
+require_relative 'station'
+require_relative 'oystercard'
+
 class Journey
 
   MINIMUM_BALANCE = 1
@@ -12,10 +15,17 @@ class Journey
 
   def fare
     if @entry_station != nil && @exit_station != nil then
-      MINIMUM_BALANCE
+      calculate_fare
     else
       PENALTY
     end
+  end
+
+  private
+
+  def calculate_fare
+    arr_of_zones = [@entry_station.zone, @exit_station.zone]
+    arr_of_zones.sort.reverse.inject(:-) + MINIMUM_BALANCE
   end
 
 end
